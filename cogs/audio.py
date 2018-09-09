@@ -438,7 +438,7 @@ class Audio:
             song_filename = os.path.join(self.cache_path, filename)
 
         use_avconv = self.settings["AVCONV"]
-        options = '-b:a 64k -bufsize 64k'
+        options = '-b:a 64k -af "compand=.3|.3:1|1:-90/-60|-60/-40|-40/-30|-20/-20:6:0:-90:0.2" -bufsize 256k'
         before_options = ''
 
         if start_time:
@@ -2192,12 +2192,12 @@ class Audio:
 
             for server in stop_times:
                 if stop_times[server] and \
-                        int(time.time()) - stop_times[server] > 300:
-                    # 5 min not playing to d/c
+                        int(time.time()) - stop_times[server] > 1800:
+                    # 30 min not playing to d/c
                     timer_disconnect = self.get_server_settings(server)
                     timer_disconnect = timer_disconnect.get("TIMER_DISCONNECT", True)
                     if timer_disconnect:
-                        log.debug("dcing from sid {} after 300s".format(server.id))
+                        log.debug("dcing from sid {} after 1800s".format(server.id))
                         self._clear_queue(server)
                         await self._stop_and_disconnect(server)
                         stop_times[server] = None
